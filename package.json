@@ -1,0 +1,23 @@
+{
+  "name": "yabm",
+  "version": "0.0.1",
+  "description": "yat another build monitor",
+  "main": "buildMonitor.js",
+  "dependencies": {
+    "unirest": "^0.5.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \\\"Error: no test specified\\\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mkrawetko/yabm.git"
+  },
+  "author": "Michal",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mkrawetko/yabm/issues"
+  },
+  "homepage": "https://github.com/mkrawetko/yabm#readme"
+}
