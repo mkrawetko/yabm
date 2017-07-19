@@ -46,6 +46,20 @@ describe('teamcityClient', function () {
                         latestBuildLink.should.equal("/app/rest/builds/id:10903080")
                     }
                 )
+        });
+        it('should return latest FAILED build id by build type ', function () {
+            nock(TEAMCITY_BASE_URL).log(console.log)
+                .matchHeader('accept', 'application/json')
+                .get('/app/rest/builds?locator=buildType:Provisioning_Tequila,count:1,status:FAILURE')
+                .reply(200, latestBuildResponse)
+            ;
+
+            return teamcityClient.getLatestBuildId('Provisioning_Tequila', {status: FAILURE})
+                .then(function (latestBuildLink) {
+                        console.log(latestBuildLink);
+                        latestBuildLink.should.equal("/app/rest/builds/id:10903080")
+                    }
+                )
         })
     })
 });
