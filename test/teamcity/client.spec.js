@@ -1,5 +1,5 @@
 'use strict';
-const teamcityClient = require('../../teamcity/client');
+const TeamCityClient = require('../../teamcity/client');
 const sinon = require('sinon');
 const chai = require('chai');
 chai.should();
@@ -21,7 +21,11 @@ const latestBuildResponse = {
 };
 
 describe('teamcityClient', function () {
-    describe('get latest build id href: ', function () {
+
+    let teamcityClient = new TeamCityClient("http:///teamcityurl.com");
+
+
+    describe('get latest build by type: ', function () {
         beforeEach(function () {
             this.get = sinon.stub(unirest, 'get');
             console.log("beforeEach worked")
@@ -42,13 +46,12 @@ describe('teamcityClient', function () {
                 }
             };
             this.get.returns(mockUnirest);
-            return teamcityClient.getLatestBuildId('Provisioning_Tequila').then(
-                function (latestBuildLink) {
-                    console.log(latestBuildLink);
-                    latestBuildLink.should.equal("/app/rest/builds/id:10903080")
-
-                }
-            )
+            return teamcityClient.getLatestBuildId('Provisioning_Tequila')
+                .then(function (latestBuildLink) {
+                        console.log(latestBuildLink);
+                        latestBuildLink.should.equal("/app/rest/builds/id:10903080")
+                    }
+                )
         })
     })
 });
