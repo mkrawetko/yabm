@@ -24,19 +24,19 @@ describe('teamcityClient', function () {
         }]
     };
 
-    let teamcityClient = new TeamCityClient(TEAMCITY_BASE_URL);
+    const teamcityClient = new TeamCityClient(TEAMCITY_BASE_URL);
 
 
-    describe('get latest build by type: ', function () {
+    describe('get latest build by type ', function () {
+        const latestBuildBasePath = '/app/rest/builds?locator=buildType:Provisioning_Tequila,count:1';
         beforeEach(function () {
-            console.log("beforeEach worked");
             nock.cleanAll();
         });
 
-        it('should return latest build id by build type ', function () {
+        it('without filters ', function () {
             nock(TEAMCITY_BASE_URL).log(console.log)
                 .matchHeader('accept', 'application/json')
-                .get('/app/rest/builds?locator=buildType:Provisioning_Tequila,count:1')
+                .get(latestBuildBasePath + ',running:any')
                 .reply(200, latestBuildResponse)
             ;
 
@@ -47,19 +47,35 @@ describe('teamcityClient', function () {
                     }
                 )
         });
-        it('should return latest FAILED build id by build type ', function () {
+        it('with status filter', function () {
             nock(TEAMCITY_BASE_URL).log(console.log)
                 .matchHeader('accept', 'application/json')
-                .get('/app/rest/builds?locator=buildType:Provisioning_Tequila,count:1,status:FAILURE')
+                .get(latestBuildBasePath + ',running:any,status:FAILURE')
                 .reply(200, latestBuildResponse)
             ;
 
-            return teamcityClient.getLatestBuildId('Provisioning_Tequila', {status: FAILURE})
+            return teamcityClient.getLatestBuildId('Provisioning_Tequila', {status: 'FAILURE'})
                 .then(function (latestBuildLink) {
                         console.log(latestBuildLink);
                         latestBuildLink.should.equal("/app/rest/builds/id:10903080")
                     }
                 )
-        })
+        });
+        it('with running filter ', function () {
+            nock(TEAMCITY_BASE_URL).log(console.log)
+                .matchHeader('accept', 'application/json')
+                .get(latestBuildBasePath + ',running:true')
+                .reply(200, latestBuildResponse)
+            ;
+
+            return teamcityClient.getLatestBuildId('Provisioning_Tequila', {running: 'true'})
+                .then(function (latestBuildLink) {
+                        console.log(latestBuildLink);
+                        latestBuildLink.should.equal("/app/rest/builds/id:10903080")
+                    }
+                )
+        });
+
+
     })
 });
