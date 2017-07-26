@@ -15,8 +15,8 @@ TEAMCITYCLIENT.prototype.getLatestBuildId = function (buildType, filters) {
     function getPathWithFilters() {
         let path = `/app/rest/builds?locator=buildType:${buildType},count:1`;
         let finalFilters = _.extend({running: 'any'}, filters);
-        console.log("final filters:");
-        console.log(finalFilters);
+        // console.log("final filters:");
+        // console.log(finalFilters);
         for (let key in finalFilters) {
             if (finalFilters.hasOwnProperty(key)) {
                 switch (key) {
@@ -36,7 +36,7 @@ TEAMCITYCLIENT.prototype.getLatestBuildId = function (buildType, filters) {
 
     return new Promise(function (resolve) {
         let path = getPathWithFilters();
-        console.log("requested url:" + self._baseUrl + path);
+        // console.log("requested url:" + self._baseUrl + path);
         unirest.get(self._baseUrl + path)
             .headers({'Accept': 'application/json'})
             .end(function (response) {
