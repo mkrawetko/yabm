@@ -9,7 +9,7 @@ const TEAMCITYCLIENT = function (baseUrl) {
 module.exports = TEAMCITYCLIENT;
 
 
-TEAMCITYCLIENT.prototype.getLatestBuildId = function (buildType, filters) {
+TEAMCITYCLIENT.prototype.getLatestBuild = function (buildType, filters) {
     let self = this;
 
     function getPathWithFilters() {
@@ -41,24 +41,43 @@ TEAMCITYCLIENT.prototype.getLatestBuildId = function (buildType, filters) {
             .headers({'Accept': 'application/json'})
             .end(function (response) {
                 // console.log(response.body);
-                resolve(response.body.build[0].href)
+                resolve({id: response.body.build[0].id.toString()})
             })
     })
 };
 
 
+function callJsonForPath(path, baseUrl) {
+    return unirest.get(baseUrl + path)
+        .headers({'Accept': 'application/json'});
+}
 TEAMCITYCLIENT.prototype.getChangesRefs = function (buildId) {
     let self = this;
 
     return new Promise(function (resolve) {
         let path = `/app/rest/changes?locator=build:(id:${buildId})`;
         // console.log("requested url:" + self._baseUrl + path);
+        callJsonForPath(path, self._baseUrl)
+        // self.callJsonForPath(path)
+            .end(function (response) {
+                resolve(response.body.change.map(function (obj) {
+                    return obj.id.toString()
+                }))
+            })
+        ;
+    })
+};
+
+TEAMCITYCLIENT.prototype.getChange = function (changeId) {
+    let self = this;
+
+    return new Promise(function (resolve) {
+        let path = `/app/rest/changes/id:${changeId}`;
+        // console.log("requested url:" + self._baseUrl + path);
         unirest.get(self._baseUrl + path)
             .headers({'Accept': 'application/json'})
             .end(function (response) {
-                resolve(response.body.change.map(function (obj) {
-                    return obj.href
-                }))
+                resolve({comment: response.body.comment})
             })
         ;
     })

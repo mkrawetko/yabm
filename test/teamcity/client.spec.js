@@ -47,9 +47,9 @@ describe('teamcityClient', function () {
                 .reply(200, latestBuildResponse)
             ;
 
-            return teamcityClient.getLatestBuildId(BUILD_TYPE_NAME)
-                .then(function (latestBuildLink) {
-                        latestBuildLink.should.equal("/app/rest/builds/id:10903080")
+            return teamcityClient.getLatestBuild(BUILD_TYPE_NAME)
+                .then(function (latestBuild) {
+                        expect(latestBuild.id).to.equal("10903080")
                     }
                 )
         });
@@ -59,9 +59,9 @@ describe('teamcityClient', function () {
                 .reply(200, latestBuildResponse)
             ;
 
-            return teamcityClient.getLatestBuildId(BUILD_TYPE_NAME, {status: 'FAILURE'})
-                .then(function (latestBuildLink) {
-                        latestBuildLink.should.equal("/app/rest/builds/id:10903080")
+            return teamcityClient.getLatestBuild(BUILD_TYPE_NAME, {status: 'FAILURE'})
+                .then(function (latestBuild) {
+                        expect(latestBuild.id).to.equal("10903080")
                     }
                 )
         });
@@ -71,9 +71,9 @@ describe('teamcityClient', function () {
                 .reply(200, latestBuildResponse)
             ;
 
-            return teamcityClient.getLatestBuildId(BUILD_TYPE_NAME, {running: 'true'})
-                .then(function (latestBuildLink) {
-                        latestBuildLink.should.equal("/app/rest/builds/id:10903080")
+            return teamcityClient.getLatestBuild(BUILD_TYPE_NAME, {running: 'true'})
+                .then(function (latestBuild) {
+                        expect(latestBuild.id).to.equal("10903080")
                     }
                 )
         });
@@ -81,7 +81,7 @@ describe('teamcityClient', function () {
 
     });
 
-    describe('get changes ids for build id', function () {
+    describe('get changes for build id', function () {
         const BUILD_ID = '11068613';
 
         function changesBasePathWith(buildId) {
@@ -134,7 +134,7 @@ describe('teamcityClient', function () {
                 }]
         };
 
-        it('get all changes', function () {
+        it('changes id', function () {
             nockForJsonTeamCity()
                 .get(changesBasePathWith(BUILD_ID))
                 .reply(200, CHANGES_RESPONSE)
@@ -143,11 +143,11 @@ describe('teamcityClient', function () {
             return teamcityClient.getChangesRefs(BUILD_ID)
                 .then(function (changesRefs) {
                         expect(changesRefs).to.have.ordered.members([
-                                '/app/rest/changes/id:306033',
-                                '/app/rest/changes/id:306032',
-                                '/app/rest/changes/id:306031',
-                                '/app/rest/changes/id:306027',
-                                '/app/rest/changes/id:305994'
+                                '306033',
+                                '306032',
+                                '306031',
+                                '306027',
+                                '305994'
                             ]
                         );
                     }
@@ -155,10 +155,10 @@ describe('teamcityClient', function () {
         });
     });
 
-    describe('get comment for changeref', function () {
+    describe('get change details for changeId', function () {
         const CHANGE_ID = '11068613';
 
-        function changesBaseForWith(changeId) {
+        function changesBasePathFor(changeId) {
             return `/app/rest/changes/id:${changeId}`
         }
 
@@ -169,7 +169,7 @@ describe('teamcityClient', function () {
             "date": "20170811T125202+0100",
             "href": "/app/rest/changes/id:306033",
             "webUrl": "http://teamcity.sns.sky.com:8111/viewModification.html?modId=306033&personal=false",
-            "comment": "HIRO-1231231: James,Karl - Added tests and implementation to handle AmendRequestedDeliveryDateInstruction in Provide order\n",
+            "comment": "HIRO-1231231: James,Karl - Added tests and implementation to handle AmendRequestedDeliveryDateInstruction in Provide order",
             "files": {
                 "file": [{
                     "before-revision": "551fe469166843d42359acb5a464ea0db146b31e",
@@ -190,15 +190,16 @@ describe('teamcityClient', function () {
                 "href": "/app/rest/vcs-root-instances/id:20469"
             }
         };
+
         it('get comment', function () {
             nockForJsonTeamCity()
-                .get(changesBaseForWith(CHANGE_ID))
+                .get(changesBasePathFor(CHANGE_ID))
                 .reply(200, CHANGE_RESPONSE)
             ;
 
             return teamcityClient.getChange(CHANGE_ID)
                 .then(function (change) {
-                        expect(change.comment).to.be.equal(
+                        expect(change.comment).to.equal(
                             'HIRO-1231231: James,Karl - Added tests and implementation to handle AmendRequestedDeliveryDateInstruction in Provide order',
                         );
                     }
