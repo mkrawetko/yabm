@@ -46,3 +46,21 @@ TEAMCITYCLIENT.prototype.getLatestBuildId = function (buildType, filters) {
     })
 };
 
+
+TEAMCITYCLIENT.prototype.getChangesRefs = function (buildId) {
+    let self = this;
+
+    return new Promise(function (resolve) {
+        let path = `/app/rest/changes?locator=build:(id:${buildId})`;
+        // console.log("requested url:" + self._baseUrl + path);
+        unirest.get(self._baseUrl + path)
+            .headers({'Accept': 'application/json'})
+            .end(function (response) {
+                resolve(response.body.change.map(function (obj) {
+                    return obj.href
+                }))
+            })
+        ;
+    })
+};
+
