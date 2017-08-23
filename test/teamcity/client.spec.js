@@ -1,19 +1,16 @@
 'use strict';
 const TeamCityClient = require('../../teamcity/client');
-const nock = require('nock')
-;
+const nock = require('nock');
 const chai = require('chai')
-    , expect = chai.expect
-    , should = chai.should();
+    , expect = chai.expect;
 
 
-describe('teamcityClient', function () {
+describe('TeamCityClient', function () {
 
     const TEAMCITY_BASE_URL = 'http://teamcityurl.com:8001';
     const teamcityClient = new TeamCityClient(TEAMCITY_BASE_URL);
 
-
-    function nockForJsonTeamCity() {
+    function teamCityForJsonRequest() {
         return nock(TEAMCITY_BASE_URL)
         // .log(console.log)
             .matchHeader('accept', 'application/json');
@@ -23,65 +20,66 @@ describe('teamcityClient', function () {
         nock.cleanAll();
     });
 
-    describe('get latest build by type ', function () {
+    describe('#getLatestBuild(buildType,filters) ', function () {
         const BUILD_TYPE_NAME = 'Provisioning_Tequila';
-        const LATEST_BUILD_BASE_PATH = `/app/rest/builds?locator=buildType:${BUILD_TYPE_NAME},count:1`;
-        const latestBuildResponse = {
-            "count": 1,
-            "href": "/app/rest/builds?locator=buildType:Provisioning_Tequila,count:1",
-            "nextHref": "/app/rest/builds?locator=buildType:Provisioning_Tequila,count:1,start:1",
-            "build": [{
-                "id": 10903080,
-                "buildTypeId": "Provisioning_Tequila",
-                "number": "521",
-                "status": "SUCCESS",
-                "state": "finished",
-                "href": "/app/rest/builds/id:10903080",
-                "webUrl": "http://teamcity.sns.sky.com:8111/viewLog.html?buildId=10903080&buildTypeId=Provisioning_Tequila"
-            }]
-        };
+        const BUILD_ID = 10903080;
 
-        it('without filters ', function () {
-            nockForJsonTeamCity()
-                .get(LATEST_BUILD_BASE_PATH + ',running:any')
-                .reply(200, latestBuildResponse)
-            ;
+        function latestBuildBasePathWith(buildTypeName) {
+            return `/app/rest/builds?locator=buildType:${buildTypeName},count:1`;
+        }
+
+        function latestBuildResponseWith(buildId) {
+            return {
+                "count": 1,
+                "href": "/app/rest/builds?locator=buildType:Provisioning_Tequila,count:1",
+                "nextHref": "/app/rest/builds?locator=buildType:Provisioning_Tequila,count:1,start:1",
+                "build": [{
+                    "id": buildId,
+                    "buildTypeId": "Provisioning_Tequila",
+                    "number": "521",
+                    "status": "SUCCESS",
+                    "state": "finished",
+                    "href": "/app/rest/builds/id:10903080",
+                    "webUrl": "http://teamcity.sns.sky.com:8111/viewLog.html?buildId=10903080&buildTypeId=Provisioning_Tequila"
+                }]
+            }
+        }
+
+        it('should return build with any status any type', function () {
+            teamCityForJsonRequest().get(latestBuildBasePathWith(BUILD_TYPE_NAME) + ',running:any')
+                .reply(200, latestBuildResponseWith(BUILD_ID));
 
             return teamcityClient.getLatestBuild(BUILD_TYPE_NAME)
                 .then(function (latestBuild) {
-                        expect(latestBuild.id).to.equal("10903080")
+                    expect(latestBuild.id).to.equal(BUILD_ID.toString())
                     }
                 )
         });
-        it('with status filter', function () {
-            nockForJsonTeamCity()
-                .get(LATEST_BUILD_BASE_PATH + ',running:any,status:FAILURE')
-                .reply(200, latestBuildResponse)
-            ;
+
+        it('should return build with state "FAILURE"', function () {
+            teamCityForJsonRequest().get(latestBuildBasePathWith(BUILD_TYPE_NAME) + ',running:any,status:FAILURE')
+                .reply(200, latestBuildResponseWith(BUILD_ID));
 
             return teamcityClient.getLatestBuild(BUILD_TYPE_NAME, {status: 'FAILURE'})
                 .then(function (latestBuild) {
-                        expect(latestBuild.id).to.equal("10903080")
+                    expect(latestBuild.id).to.equal(BUILD_ID.toString())
                     }
                 )
         });
-        it('with running filter ', function () {
-            nockForJsonTeamCity()
-                .get(LATEST_BUILD_BASE_PATH + ',running:true')
-                .reply(200, latestBuildResponse)
-            ;
+
+        it('should return build with type "running"', function () {
+            teamCityForJsonRequest().get(latestBuildBasePathWith(BUILD_TYPE_NAME) + ',running:true')
+                .reply(200, latestBuildResponseWith(BUILD_ID));
 
             return teamcityClient.getLatestBuild(BUILD_TYPE_NAME, {running: 'true'})
                 .then(function (latestBuild) {
-                        expect(latestBuild.id).to.equal("10903080")
+                    expect(latestBuild.id).to.equal(BUILD_ID.toString())
                     }
                 )
         });
-
-
     });
 
-    describe('get changes for build id', function () {
+    describe('#getBuildChanges(buildId)', function () {
         const BUILD_ID = '11068613';
 
         function changesBasePathWith(buildId) {
@@ -134,13 +132,11 @@ describe('teamcityClient', function () {
                 }]
         };
 
-        it('changes id', function () {
-            nockForJsonTeamCity()
-                .get(changesBasePathWith(BUILD_ID))
-                .reply(200, CHANGES_RESPONSE)
-            ;
+        it('should return all changes ids', function () {
+            teamCityForJsonRequest().get(changesBasePathWith(BUILD_ID))
+                .reply(200, CHANGES_RESPONSE);
 
-            return teamcityClient.getChangesRefs(BUILD_ID)
+            return teamcityClient.getBuildChanges(BUILD_ID)
                 .then(function (changesRefs) {
                         expect(changesRefs).to.have.ordered.members([
                                 '306033',
@@ -155,7 +151,7 @@ describe('teamcityClient', function () {
         });
     });
 
-    describe('get change details for changeId', function () {
+    describe('#getChange(changeId)', function () {
         const CHANGE_ID = '11068613';
 
         function changesBasePathFor(changeId) {
@@ -191,11 +187,9 @@ describe('teamcityClient', function () {
             }
         };
 
-        it('get comment', function () {
-            nockForJsonTeamCity()
-                .get(changesBasePathFor(CHANGE_ID))
-                .reply(200, CHANGE_RESPONSE)
-            ;
+        it('should return comment used for this change', function () {
+            teamCityForJsonRequest().get(changesBasePathFor(CHANGE_ID))
+                .reply(200, CHANGE_RESPONSE);
 
             return teamcityClient.getChange(CHANGE_ID)
                 .then(function (change) {

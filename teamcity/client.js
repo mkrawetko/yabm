@@ -51,7 +51,8 @@ function callJsonForPath(path, baseUrl) {
     return unirest.get(baseUrl + path)
         .headers({'Accept': 'application/json'});
 }
-TEAMCITYCLIENT.prototype.getChangesRefs = function (buildId) {
+
+TEAMCITYCLIENT.prototype.getBuildChanges = function (buildId) {
     let self = this;
 
     return new Promise(function (resolve) {
