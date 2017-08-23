@@ -3,8 +3,16 @@
 let unirest = require('unirest');
 let _ = require("underscore");
 
-const TEAMCITYCLIENT = function (baseUrl) {
-    this._baseUrl = baseUrl;
+let map = new WeakMap();
+
+let internal = function (object) {
+    if (!map.has(object))
+        map.set(object, {});
+    return map.get(object);
+};
+
+const TEAMCITYCLIENT = function (_baseUrl) {
+    internal(this).baseUrl = _baseUrl;
 };
 module.exports = TEAMCITYCLIENT;
 
@@ -37,7 +45,7 @@ TEAMCITYCLIENT.prototype.getLatestBuild = function (buildType, filters) {
     return new Promise(function (resolve) {
         let path = getPathWithFilters();
         // console.log("requested url:" + self._baseUrl + path);
-        unirest.get(self._baseUrl + path)
+        unirest.get(internal(self).baseUrl + path)
             .headers({'Accept': 'application/json'})
             .end(function (response) {
                 // console.log(response.body);
@@ -58,7 +66,7 @@ TEAMCITYCLIENT.prototype.getBuildChanges = function (buildId) {
     return new Promise(function (resolve) {
         let path = `/app/rest/changes?locator=build:(id:${buildId})`;
         // console.log("requested url:" + self._baseUrl + path);
-        callJsonForPath(path, self._baseUrl)
+        callJsonForPath(path, internal(self).baseUrl)
         // self.callJsonForPath(path)
             .end(function (response) {
                 resolve(response.body.change.map(function (obj) {
@@ -75,7 +83,7 @@ TEAMCITYCLIENT.prototype.getChange = function (changeId) {
     return new Promise(function (resolve) {
         let path = `/app/rest/changes/id:${changeId}`;
         // console.log("requested url:" + self._baseUrl + path);
-        unirest.get(self._baseUrl + path)
+        unirest.get(internal(self).baseUrl + path)
             .headers({'Accept': 'application/json'})
             .end(function (response) {
                 resolve({comment: response.body.comment})
