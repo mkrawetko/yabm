@@ -1,5 +1,5 @@
 'use strict';
-const TeamCityService = require('../../teamcity/service');
+const TeamCityService = require('../../../main/nodejs/teamcity/service');
 const chai = require('chai')
     , expect = chai.expect;
 

@@ -15,7 +15,7 @@
     "sinon": "^2.3.5"
   },
   "scripts": {
-    "test": "node_modules/mocha/bin/mocha './test/**/*.spec.js'"
+    "test": "node_modules/mocha/bin/mocha './src/test/nodejs/**/*.spec.js'"
   },
   "repository": {
     "type": "git",

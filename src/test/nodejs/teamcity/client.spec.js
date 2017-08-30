@@ -1,5 +1,5 @@
 'use strict';
-const TeamCityClient = require('../../teamcity/client');
+const TeamCityClient = require('../../../main/nodejs/teamcity/client');
 const nock = require('nock');
 const chai = require('chai')
     , expect = chai.expect;
@@ -194,7 +194,7 @@ describe('TeamCityClient', function () {
             return teamcityClient.getChange(CHANGE_ID)
                 .then(function (change) {
                         expect(change.comment).to.equal(
-                            'HIRO-1231231: James,Karl - Added tests and implementation to handle AmendRequestedDeliveryDateInstruction in Provide order',
+                            'HIRO-1231231: James,Karl - Added tests and implementation to handle AmendRequestedDeliveryDateInstruction in Provide order'
                         );
                     }
                 )
