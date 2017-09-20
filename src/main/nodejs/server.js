@@ -21,3 +21,11 @@ console.log("App listening on port 8080");
 app.get('*', function(req, res) {
     res.sendfile('./App/yabmui/index.html'); // load the single view file (angular will handle the page changes on the front-end)
 });
+
+// api ---------------------------------------------------------------------
+// get all todos
+app.get('/api/builds', function(req, res) {
+
+    // use teamcity to get all builds
+
+});
