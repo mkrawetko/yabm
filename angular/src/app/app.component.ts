@@ -15,14 +15,12 @@ const BUILDS: Build[] = [
     selector: 'build-monitor-app',
     template: `
         <div *ngIf="failedBuilds.length>0">
-            <h2>Failed Builds</h2>
             <ul class="builds">
                 <li *ngFor="let build of failedBuilds">
                     <span class="failed">{{build.name}}</span>
                 </li>
             </ul>
         </div>
-        <h2>My Builds</h2>
         <ul class="builds">
             <li *ngFor="let build of successfulBuilds">
                 <span class="badge">{{build.name}}</span>
@@ -51,6 +49,7 @@ const BUILDS: Build[] = [
             padding: .3em 0;
             height: 1.6em;
             border-radius: 4px;
+            display: inline;
         }
 
         .builds li.selected:hover {
