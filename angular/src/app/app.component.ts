@@ -1,11 +1,5 @@
 import {Component} from '@angular/core';
-
-export class Build {
-    id: string;
-    name: string;
-    status: string;
-    path: string;
-}
+import {Build} from './build'
 
 const BUILDS: Build[] = [
     {id: 'Tequila_Provisioning', name: 'Tequila Master Release', status: 'SUCCESS', path: "/Provisioning/Tequila"},
