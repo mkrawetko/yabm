@@ -1,19 +1,47 @@
 import {Component} from '@angular/core';
 
 export class Build {
+    id: string;
     name: string;
     status: string;
+    path: string;
 }
 
 const BUILDS: Build[] = [
-    {name: 'Tequila', status: 'SUCCESS'},
-    {name: 'Corona', status: 'SUCCESS'},
-    {name: 'Halo', status: 'FAILED'}
+    {id: 'Tequila_Provisioning', name: 'Tequila Master Release', status: 'SUCCESS', path: "/Provisioning/Tequila"},
+    {id: 'Corona_Provisioning', name: 'Corona', status: 'SUCCESS', path: "/Provisioning/Corona"},
+    {id: 'HaloId', name: 'Halo', status: 'FAILED', path: "/Provisioning/Halo"},
+    {
+        id: 'SaltFaithId',
+        name: 'Run SALT Faith Tests',
+        status: 'SUCCESS',
+        path: "/Netstream/Netstream Trunk/Faith/Docker"
+    },
+    {id: 'IomFaithId', name: 'Run IOM Faith Tests', status: 'SUCCESS', path: "/Netstream/Netstream Trunk/Faith/Docker"},
+    {id: 'Halo_commonsId', name: 'Halo Commons', status: 'SUCCESS', path: "/Hiro Projects"}
 ];
+
+const PROJECTS_GROUPS: string[] = [
+    'Provisioning', 'Hiro Projects', 'Faith'
+];
+const BUIDLS_TO_REQUEST: string[] = [
+    'Tequila_Provisioning', 'Corona_Provisioning', 'HaloId', 'SaltFaithId', 'IomFaithId', 'Halo_commonsId'
+];
+
+export class ProjectWithBuilds {
+    project: string;
+    builds: Build[];
+
+    constructor(project: string, builds: Build[]) {
+        this.project = project;
+        this.builds = builds;
+    }
+}
 
 @Component({
     selector: 'build-monitor-app',
     template: `
+
         <div *ngIf="failedBuilds.length>0">
             <ul class="builds">
                 <li *ngFor="let build of failedBuilds">
@@ -22,39 +50,27 @@ const BUILDS: Build[] = [
             </ul>
         </div>
         <ul class="builds">
-            <li *ngFor="let build of successfulBuilds">
-                <span class="badge">{{build.name}}</span>
+            <li *ngFor="let projectWithBuilds of projectsWithBuilds">
+                <span class="success">{{projectWithBuilds.project}}</span>
+                <ul class="builds">
+                    <li *ngFor="let build of projectWithBuilds.builds">
+                        <span class="success">{{build.name}}</span>
+                    </li>
+                </ul>
             </li>
         </ul>
     `,
     styles: [`
-        .selected {
-            background-color: #CFD8DC !important;
-            color: white;
-        }
 
         .builds {
-            margin: 0 0 2em 0;
-            list-style-type: none;
-            padding: 0;
-            width: 15em;
         }
 
         .builds li {
             cursor: pointer;
             position: relative;
-            left: 0;
             background-color: #EEE;
-            margin: .5em;
-            padding: .3em 0;
-            height: 1.6em;
-            border-radius: 4px;
+            padding: 0.3em 0;
             display: inline;
-        }
-
-        .builds li.selected:hover {
-            background-color: #BBD8DC !important;
-            color: white;
         }
 
         .builds li:hover {
@@ -63,48 +79,31 @@ const BUILDS: Build[] = [
             left: .1em;
         }
 
-        .builds .text {
-            position: relative;
-            top: -3px;
-        }
-
-        .builds .badge {
+        .builds .success {
             display: inline-block;
-            font-size: small;
+            font-size: 1em;
             color: green;
             padding: 0.8em 0.7em 0 0.7em;
             line-height: 1em;
             position: relative;
-            left: -1px;
-            top: -4px;
-            height: 1.8em;
-            margin-right: .8em;
-            border-radius: 4px 0 0 4px;
         }
 
         .builds .failed {
             display: inline-block;
-            font-size: large;
+            font-size: 6em;
             color: red;
-            padding: 0.8em 0.7em 0 0.7em;
             line-height: 1em;
             position: relative;
-            left: -1px;
-            top: -4px;
-            height: 1.8em;
-            margin-right: .8em;
-            border-radius: 4px 0 0 4px;
         }
     `]
 })
 export class AppComponent {
-    heading = "Hiro Builds";
 
-    successfulBuilds = BUILDS.filter(value => value.status === 'SUCCESS');
+    projectsWithBuilds = PROJECTS_GROUPS.map(p => new ProjectWithBuilds(p, BUILDS
+            .filter(value => value.status === 'SUCCESS')
+            .filter(value => value.path.includes(`/${p}`))
+        )
+    );
+
     failedBuilds = BUILDS.filter(value => value.status === 'FAILED');
-
-    b: Build = {
-        name: "Tequila",
-        status: "SUCCESS"
-    };
 }
