@@ -21,62 +21,8 @@ export class ProjectWithBuilds {
 
 @Component({
     selector: 'build-monitor-app',
-    template: `
-
-        <div *ngIf="failedBuilds.length>0">
-            <ul class="builds">
-                <li *ngFor="let build of failedBuilds">
-                    <span class="failed">{{build.name}}</span>
-                </li>
-            </ul>
-        </div>
-        <ul class="builds">
-            <li *ngFor="let projectWithBuilds of projectsWithBuilds">
-                <span class="success">{{projectWithBuilds.project}}</span>
-                <ul class="builds">
-                    <li *ngFor="let build of projectWithBuilds.builds">
-                        <span class="success">{{build.name}}</span>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-    `,
-    styles: [`
-
-        .builds {
-        }
-
-        .builds li {
-            cursor: pointer;
-            position: relative;
-            background-color: #EEE;
-            padding: 0.3em 0;
-            display: inline;
-        }
-
-        .builds li:hover {
-            color: #607D8B;
-            background-color: #DDD;
-            left: .1em;
-        }
-
-        .builds .success {
-            display: inline-block;
-            font-size: 1em;
-            color: green;
-            padding: 0.8em 0.7em 0 0.7em;
-            line-height: 1em;
-            position: relative;
-        }
-
-        .builds .failed {
-            display: inline-block;
-            font-size: 6em;
-            color: red;
-            line-height: 1em;
-            position: relative;
-        }
-    `],
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css'],
     providers: [BuildService]
 
 })

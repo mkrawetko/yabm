@@ -1,0 +1,17 @@
+<div *ngIf="failedBuilds.length>0">
+    <ul class="builds">
+        <li *ngFor="let build of failedBuilds">
+            <span class="failed">{{build.name}}</span>
+        </li>
+    </ul>
+</div>
+<ul class="builds">
+    <li *ngFor="let projectWithBuilds of projectsWithBuilds">
+        <span class="success">{{projectWithBuilds.project}}</span>
+        <ul class="builds">
+            <li *ngFor="let build of projectWithBuilds.builds">
+                <span class="success">{{build.name}}</span>
+            </li>
+        </ul>
+    </li>
+</ul>
