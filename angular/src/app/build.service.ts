@@ -3,7 +3,13 @@ import {BUILDS} from "./mock-builds";
 
 
 export class BuildService {
-    getBuilds(): Build[] {
-        return BUILDS;
+    getBuilds(): Promise<Build[]> {
+        return Promise.resolve(BUILDS);
+    }
+
+    getBuildsSlowly(): Promise<Build[]> {
+        return new Promise(resolve => {
+            setTimeout(() => resolve(BUILDS), 2000)
+        })
     }
 }

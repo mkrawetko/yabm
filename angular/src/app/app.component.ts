@@ -81,19 +81,24 @@ export class ProjectWithBuilds {
 
 })
 export class AppComponent implements OnInit {
-    projectsWithBuilds: ProjectWithBuilds[];
-    failedBuilds: Build[];
+    projectsWithBuilds: ProjectWithBuilds[] = [];
+    failedBuilds: Build[] = [];
 
     ngOnInit(): void {
 
-        let allBuilds = this.buildsService.getBuilds();
+        console.log("about to get Builds!" + new Date());
 
-        this.projectsWithBuilds = PROJECTS_GROUPS.map(p => new ProjectWithBuilds(p, allBuilds
-                .filter(value => value.status === 'SUCCESS')
-                .filter(value => value.path.includes(`/${p}`))
-            )
-        );
-        this.failedBuilds = allBuilds.filter(value => value.status === 'FAILED');
+        this.buildsService.getBuildsSlowly().then(allBuilds => {
+
+            this.projectsWithBuilds = PROJECTS_GROUPS.map(p => new ProjectWithBuilds(p, allBuilds
+                    .filter(value => value.status === 'SUCCESS')
+                    .filter(value => value.path.includes(`/${p}`))
+                )
+            );
+            this.failedBuilds = allBuilds.filter(value => value.status === 'FAILED');
+            console.log("builds set" + new Date());
+        });
+
     }
 
     constructor(private buildsService: BuildService) {
