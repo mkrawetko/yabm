@@ -4,12 +4,12 @@ import {BUILDS} from "./mock-builds";
 
 export class BuildService {
     getBuilds(): Promise<Build[]> {
-        return Promise.resolve(BUILDS);
+        return Promise.resolve(BUILDS());
     }
 
     getBuildsSlowly(): Promise<Build[]> {
         return new Promise(resolve => {
-            setTimeout(() => resolve(BUILDS), 2000)
+            setTimeout(() => resolve(BUILDS()), 2000)
         })
     }
 }

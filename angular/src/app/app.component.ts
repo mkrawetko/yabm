@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {Build} from './build'
-import {BuildService} from "./build.service";
+import {Build, STATUS} from './builds/build'
+import {BuildService} from "./builds/build.service";
 
 const PROJECTS_GROUPS: string[] = [
     'Provisioning', 'Hiro Projects', 'Faith'
@@ -31,20 +31,20 @@ export class AppComponent implements OnInit {
     failedBuilds: Build[] = [];
 
     ngOnInit(): void {
+        this.updateBuildsStatus();
+    }
 
-        console.log("about to get Builds!" + new Date());
+    private updateBuildsStatus() {
 
         this.buildsService.getBuildsSlowly().then(allBuilds => {
-
             this.projectsWithBuilds = PROJECTS_GROUPS.map(p => new ProjectWithBuilds(p, allBuilds
-                    .filter(value => value.status === 'SUCCESS')
+                    .filter(value => value.status === STATUS.SUCCESS)
                     .filter(value => value.path.includes(`/${p}`))
                 )
             );
-            this.failedBuilds = allBuilds.filter(value => value.status === 'FAILED');
-            console.log("builds set" + new Date());
+            this.failedBuilds = allBuilds.filter(value => value.status === STATUS.FAILURE);
         });
-
+        setTimeout(() => this.updateBuildsStatus(), 2000);
     }
 
     constructor(private buildsService: BuildService) {
