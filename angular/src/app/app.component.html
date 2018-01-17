@@ -7,7 +7,7 @@
 </div>
 <ul class="builds">
     <li *ngFor="let projectWithBuilds of projectsWithBuilds">
-        <span class="success">{{projectWithBuilds.project}}</span>
+        <span class="group">{{projectWithBuilds.project}}</span>
         <ul class="builds">
             <li *ngFor="let build of projectWithBuilds.builds">
                 <span class="success">{{build.name}}</span>
